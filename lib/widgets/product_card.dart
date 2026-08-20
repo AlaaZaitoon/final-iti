@@ -325,7 +325,7 @@ class _ProductCardState extends State<ProductCard> {
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 10.0,
-                vertical: 8.0,
+                vertical: 6.0,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,16 +341,16 @@ class _ProductCardState extends State<ProductCard> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF111827),
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 2),
                         Text(
                           '\$${widget.product.price.toInt()}',
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF6055D8),
                           ),
@@ -364,8 +364,8 @@ class _ProductCardState extends State<ProductCard> {
                     GestureDetector(
                       onTap: _addToCart,
                       child: Container(
-                        width: 32,
-                        height: 32,
+                        width: 28,
+                        height: 28,
                         decoration: const BoxDecoration(
                           color: Color(0xFF6055D8),
                           shape: BoxShape.circle,
@@ -373,7 +373,7 @@ class _ProductCardState extends State<ProductCard> {
                         child: const Icon(
                           Icons.add,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
                     ),
