@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "822810460501",
+    "project_id": "ecommerce-app-iti",
+    "storage_bucket": "ecommerce-app-iti.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822810460501:android:91574aa2cccfd4a395afdc",
+        "android_client_info": {
+          "package_name": "com.example.final_iti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822810460501-0ug238mkehu9th80tufql8i9hp77q3gp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRXWKYQxdxSshUahSVhEaxiAN3uFxtDS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822810460501-0ug238mkehu9th80tufql8i9hp77q3gp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
