@@ -172,7 +172,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final bool canPop = Navigator.canPop(context);
 
     if (user == null) {
       return Scaffold(
@@ -198,25 +197,7 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: canPop
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF3F4F6),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Color(0xFF111827),
-                      size: 20,
-                    ),
-                  ),
-                ),
-              )
-            : null,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Cart',
           style: TextStyle(

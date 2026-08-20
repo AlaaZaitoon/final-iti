@@ -287,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 14),
 
               SizedBox(
-                height: 160,
+                height: 175,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: featuredProducts.length,
@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 14),
 
               SizedBox(
-                height: 160,
+                height: 175,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: popularProducts.length,

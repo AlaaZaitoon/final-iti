@@ -250,14 +250,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
-                        mainAxisSpacing: 20.0,
-                        childAspectRatio: 0.82,
+                        mainAxisSpacing: 18.0,
+                        childAspectRatio: 0.76,
                       ),
                       itemBuilder: (context, index) {
                         final product = _filteredProducts[index];
                         return ProductCard(
                           product: product,
-                          imageHeight: 145.0,
+                          imageHeight: 130.0,
                           showAddButton: true,
                         );
                       },
