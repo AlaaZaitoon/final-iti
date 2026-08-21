@@ -2,9 +2,9 @@
    HOME NAV MODULE: Home Screen
    ======================================================= */
 
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../widgets/discount_banner.dart';
 import '../widgets/product_card.dart';
@@ -22,37 +22,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final PageController _pageController = PageController();
-  Timer? _bannerTimer;
-  int _currentPage = 0;
+  int _currentBannerIndex = 0;
   bool _isNotificationActive = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoSlide();
-  }
-
-  @override
-  void dispose() {
-    _bannerTimer?.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  /* ============= Auto-sliding Banner Timer ============= */
-  void _startAutoSlide() {
-    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_pageController.hasClients) {
-        _currentPage = (_currentPage + 1) % 4;
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
 
   /* ============= Get User Display Name ============= */
   String _getUserName() {
@@ -209,55 +180,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 20),
 
-              // 3. Auto-Sliding Discount Banners + Page Indicator
-              SizedBox(
-                height: 140,
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
+              // 3. Auto-Sliding Discount Banners + Page Indicator (CarouselSlider)
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 140,
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 3),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 500),
+                  autoPlayCurve: Curves.easeInOut,
+                  viewportFraction: 1.0,
+                  onPageChanged: (index, reason) {
                     setState(() {
-                      _currentPage = index;
+                      _currentBannerIndex = index;
                     });
                   },
-                  children: const [
-                    DiscountBanner(
-                      title: 'Get Winter Discount',
-                      discount: '20% Off',
-                      subtitle: 'For Childern',
-                      imagePath: 'assets/images/discount.png',
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                    ),
-                    DiscountBanner(
-                      title: 'Summer Flash Sale',
-                      discount: '30% Off',
-                      subtitle: 'All Footwear',
-                      imagePath: 'assets/images/footwear.png',
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                    ),
-                    DiscountBanner(
-                      title: 'Exclusive Weekend Offer',
-                      discount: '15% Off',
-                      subtitle: 'Electronics & Audio',
-                      imagePath: 'assets/images/apple.png',
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                    ),
-                    DiscountBanner(
-                      title: 'New Season Arrival',
-                      discount: '25% Off',
-                      subtitle: 'Jackets & Hoodies',
-                      imagePath: 'assets/images/hoodie&jacket.png',
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                    ),
-                  ],
                 ),
+                items: const [
+                  DiscountBanner(
+                    title: 'Get Winter Discount',
+                    discount: '20% Off',
+                    subtitle: 'For Childern',
+                    imagePath: 'assets/images/discount.png',
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                  ),
+                  DiscountBanner(
+                    title: 'Summer Flash Sale',
+                    discount: '30% Off',
+                    subtitle: 'All Footwear',
+                    imagePath: 'assets/images/footwear.png',
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                  ),
+                  DiscountBanner(
+                    title: 'Exclusive Weekend Offer',
+                    discount: '15% Off',
+                    subtitle: 'Electronics & Audio',
+                    imagePath: 'assets/images/apple.png',
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                  ),
+                  DiscountBanner(
+                    title: 'New Season Arrival',
+                    discount: '25% Off',
+                    subtitle: 'Jackets & Hoodies',
+                    imagePath: 'assets/images/hoodie&jacket.png',
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 12),
 
-              // Smooth Page Indicator
+              // Smooth Animated Page Indicator
               Center(
-                child: SmoothPageIndicator(
-                  controller: _pageController,
+                child: AnimatedSmoothIndicator(
+                  activeIndex: _currentBannerIndex,
                   count: 4,
                   effect: const ExpandingDotsEffect(
                     dotHeight: 6,
