@@ -17,6 +17,7 @@ class Product {
   final double rating;
   final int reviews;
   final String description;
+  final List<String> sizes;
 
   const Product({
     required this.id,
@@ -28,6 +29,7 @@ class Product {
     this.reviews = 20,
     this.description =
         'Culpa aliquam consequuntur veritatis at consequuntur praesentium beatae temporibus nobis. Velit dolorem facilis neque autem. Itaque voluptatem expedita qui eveniet id veritatis eaque. Blanditiis quia placeat nemo. Nobis laudantium nesciunt perspiciatis sit eligendi.',
+    this.sizes = const [],
   });
 }
 
@@ -43,6 +45,7 @@ const List<Product> sampleProducts = [
     reviews: 35,
     description:
         'A luxury analog timepiece crafted with premium materials, water resistance, and an elegant stainless steel finish for any occasion.',
+    sizes: [],
   ),
   Product(
     id: 'nike',
@@ -54,6 +57,7 @@ const List<Product> sampleProducts = [
     reviews: 20,
     description:
         'Culpa aliquam consequuntur veritatis at consequuntur praesentium beatae temporibus nobis. Velit dolorem facilis neque autem. Itaque voluptatem expedita qui eveniet id veritatis eaque. Blanditiis quia placeat nemo. Nobis laudantium nesciunt perspiciatis sit eligendi.',
+    sizes: ['38', '39', '40', '41', '42'],
   ),
   Product(
     id: 'airpods',
@@ -65,6 +69,7 @@ const List<Product> sampleProducts = [
     reviews: 58,
     description:
         'Wireless Bluetooth earbuds delivering rich, immersive sound, active noise cancellation, and seamless connectivity with all your devices.',
+    sizes: [],
   ),
   Product(
     id: 'tv',
@@ -76,6 +81,7 @@ const List<Product> sampleProducts = [
     reviews: 42,
     description:
         'Ultra HD smart television featuring vibrant OLED display, ultra-low latency gaming mode, and cinematic audio experience.',
+    sizes: [],
   ),
   Product(
     id: 'jacket',
@@ -87,6 +93,7 @@ const List<Product> sampleProducts = [
     reviews: 27,
     description:
         'Premium winter insulated down jacket with waterproof outer shell, detachable hood, and fleece-lined pockets.',
+    sizes: ['S', 'M', 'L', 'XL'],
   ),
   Product(
     id: 'hoodie',
@@ -98,6 +105,7 @@ const List<Product> sampleProducts = [
     reviews: 19,
     description:
         'Casual soft-cotton fleece pullover hoodie offering comfort, warmth, and a stylish relaxed fit for daily streetwear.',
+    sizes: ['S', 'M', 'L', 'XL'],
   ),
   Product(
     id: 'girl',
@@ -109,6 +117,7 @@ const List<Product> sampleProducts = [
     reviews: 14,
     description:
         'Breathable pure cotton casual graphic t-shirt with modern print and lightweight relaxed fit.',
+    sizes: ['S', 'M', 'L', 'XL'],
   ),
   Product(
     id: 't-shirt',
@@ -120,6 +129,7 @@ const List<Product> sampleProducts = [
     reviews: 22,
     description:
         'Soft knit crewneck pastel sweater designed for a chic, cozy layer during chilly mornings and evenings.',
+    sizes: ['S', 'M', 'L', 'XL'],
   ),
 ];
 
@@ -211,11 +221,17 @@ class _ProductCardState extends State<ProductCard> {
     }
 
     try {
+      final String defaultSize =
+          widget.product.sizes.isNotEmpty ? widget.product.sizes.first : '';
+      final String docId = defaultSize.isNotEmpty
+          ? '${widget.product.id}_$defaultSize'
+          : widget.product.id;
+
       final cartDoc = FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('cart')
-          .doc(widget.product.id);
+          .doc(docId);
 
       final snapshot = await cartDoc.get();
       if (snapshot.exists) {
@@ -227,13 +243,15 @@ class _ProductCardState extends State<ProductCard> {
       } else {
         await cartDoc.set({
           'id': widget.product.id,
+          'cartItemId': docId,
           'title': widget.product.title,
           'price': widget.product.price,
           'image': widget.product.image,
           'brand': widget.product.brand,
-          'size': '38',
+          'size': defaultSize,
           'quantity': 1,
           'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
         });
       }
 

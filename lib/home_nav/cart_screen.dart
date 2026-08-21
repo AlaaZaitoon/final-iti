@@ -198,6 +198,25 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leading: Navigator.canPop(context)
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF3F4F6),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Color(0xFF111827),
+                      size: 20,
+                    ),
+                  ),
+                ),
+              )
+            : null,
         title: const Text(
           'Cart',
           style: TextStyle(
@@ -306,6 +325,7 @@ class _CartScreenState extends State<CartScreen> {
                     final data = doc.data() as Map<String, dynamic>;
                     final String title = data['title'] ?? 'Product';
                     final String brand = data['brand'] ?? 'Store';
+                    final String size = data['size'] ?? '';
                     final String image =
                         data['image'] ?? 'assets/images/discount.png';
                     final double price =
@@ -379,7 +399,9 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      brand,
+                                      size.isNotEmpty
+                                          ? '$brand • Size: $size'
+                                          : brand,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Color(0xFF9CA3AF),

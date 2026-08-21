@@ -3,6 +3,7 @@
    ======================================================= */
 
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
 import 'cart_screen.dart';
@@ -51,39 +52,55 @@ class _MainNavScreenState extends State<MainNavScreen> {
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF6055D8),
-          unselectedItemColor: const Color(0xFF9CA3AF),
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded, size: 26),
-              label: 'Home',
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 10.0,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_rounded, size: 26),
-              label: 'Search',
+            child: GNav(
+              selectedIndex: _currentIndex,
+              onTabChange: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              rippleColor: const Color(0xFF6055D8).withValues(alpha: 0.1),
+              hoverColor: const Color(0xFF6055D8).withValues(alpha: 0.05),
+              haptic: true,
+              tabBorderRadius: 20,
+              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 300),
+              gap: 8,
+              color: const Color(0xFF9CA3AF),
+              activeColor: const Color(0xFF6055D8),
+              iconSize: 24,
+              tabBackgroundColor:
+                  const Color(0xFF6055D8).withValues(alpha: 0.12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              tabs: const [
+                GButton(
+                  icon: Icons.home_rounded,
+                  text: 'Home',
+                ),
+                GButton(
+                  icon: Icons.search_rounded,
+                  text: 'Search',
+                ),
+                GButton(
+                  icon: Icons.shopping_bag_rounded,
+                  text: 'Cart',
+                ),
+                GButton(
+                  icon: Icons.person_rounded,
+                  text: 'Profile',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined, size: 26),
-              activeIcon: Icon(Icons.shopping_bag_rounded, size: 26),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded, size: 26),
-              label: 'Profile',
-            ),
-          ],
+          ),
         ),
       ),
     );

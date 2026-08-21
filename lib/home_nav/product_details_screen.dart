@@ -6,29 +6,29 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/product_card.dart';
+import 'cart_screen.dart';
 
 /* ============= Product Details Screen Widget ============= */
 class ProductDetailsScreen extends StatefulWidget {
   final Product product;
 
-  const ProductDetailsScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailsScreen({super.key, required this.product});
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  String _selectedSize = '38';
-  final List<String> _sizes = ['8', '10', '38', '40'];
+  String? _selectedSize;
   bool _isFavorite = false;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.product.sizes.isNotEmpty) {
+      _selectedSize = widget.product.sizes.first;
+    }
     _checkFavoriteStatus();
   }
 
@@ -96,36 +96,70 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     });
 
     try {
+      final String size = _selectedSize ?? '';
+      final String docId = size.isNotEmpty
+          ? '${widget.product.id}_$size'
+          : widget.product.id;
+
       final cartDoc = FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('cart')
-          .doc(widget.product.id);
+          .doc(docId);
 
-      await cartDoc.set({
-        'id': widget.product.id,
-        'title': widget.product.title,
-        'price': widget.product.price,
-        'image': widget.product.image,
-        'brand': widget.product.brand,
-        'size': _selectedSize,
-        'quantity': 1,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      final snapshot = await cartDoc.get();
+      if (snapshot.exists) {
+        final currentQty = snapshot.data()?['quantity'] ?? 1;
+        await cartDoc.update({
+          'quantity': currentQty + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        await cartDoc.set({
+          'id': widget.product.id,
+          'cartItemId': docId,
+          'title': widget.product.title,
+          'price': widget.product.price,
+          'image': widget.product.image,
+          'brand': widget.product.brand,
+          'size': size,
+          'quantity': 1,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isBuyNow
-                ? 'Proceeding to checkout with size $_selectedSize'
-                : 'Item added with size $_selectedSize',
+      if (isBuyNow) {
+        // Buy Now directly opens Cart / Checkout screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CartScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              size.isNotEmpty
+                  ? '${widget.product.title} (Size: $size) added to cart'
+                  : '${widget.product.title} added to cart',
+            ),
+            backgroundColor: const Color(0xFF6055D8),
+            duration: const Duration(seconds: 2),
+            action: SnackBarAction(
+              label: 'View Cart',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CartScreen()),
+                );
+              },
+            ),
           ),
-          backgroundColor: const Color(0xFF6055D8),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
+      }
     } catch (e) {
       if (!mounted) return;
 
@@ -257,59 +291,62 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                       const SizedBox(height: 24),
 
-                      // Size Selector Section
-                      const Text(
-                        'Size',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF111827),
+                      // Size Selector Section (Only shown if product has available sizes)
+                      if (widget.product.sizes.isNotEmpty) ...[
+                        const Text(
+                          'Size',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF111827),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: _sizes.map((size) {
-                          final isSelected = _selectedSize == size;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedSize = size;
-                              });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              width: 46,
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? Colors.white
-                                    : const Color(0xFFF9FAFB),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
+                        const SizedBox(height: 12),
+                        Row(
+                          children: widget.product.sizes.map((size) {
+                            final isSelected = _selectedSize == size;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedSize = size;
+                                });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                width: 46,
+                                height: 46,
+                                decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFF6055D8)
-                                      : const Color(0xFFE5E7EB),
-                                  width: isSelected ? 1.8 : 1.2,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  size,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
+                                      ? Colors.white
+                                      : const Color(0xFFF9FAFB),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
                                     color: isSelected
                                         ? const Color(0xFF6055D8)
-                                        : const Color(0xFF111827),
+                                        : const Color(0xFFE5E7EB),
+                                    width: isSelected ? 1.8 : 1.2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    size,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? const Color(0xFF6055D8)
+                                          : const Color(0xFF111827),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
 
                       const SizedBox(height: 100), // Bottom padding for actions
                     ],
@@ -398,19 +435,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             right: 0,
             bottom: 0,
             child: Container(
+              color: Colors.white,
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
                 vertical: 16.0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
               ),
               child: SafeArea(
                 top: false,
