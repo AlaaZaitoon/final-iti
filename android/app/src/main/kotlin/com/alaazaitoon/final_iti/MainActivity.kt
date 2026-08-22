@@ -1,4 +1,4 @@
-package com.example.final_iti
+package com.alaazaitoon.final_iti
 
 import io.flutter.embedding.android.FlutterActivity
 
