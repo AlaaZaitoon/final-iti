@@ -39,11 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
       } else {
         _filteredProducts = sampleProducts.where((product) {
           final queryLower = _searchQuery.toLowerCase();
-          final matchesTitle = product.title.toLowerCase().contains(queryLower);
-          final matchesBrand = product.brand.toLowerCase().contains(queryLower);
-          final matchesDesc =
-              product.description.toLowerCase().contains(queryLower);
-          return matchesTitle || matchesBrand || matchesDesc;
+          return product.title.toLowerCase().contains(queryLower);
         }).toList();
       }
     });
