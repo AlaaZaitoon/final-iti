@@ -54,8 +54,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool canPop = Navigator.canPop(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -69,27 +67,6 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                  // Optional Back Arrow if navigated to
-                  if (canPop) ...[
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF3F4F6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFF111827),
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
-
                   // Search Text Field Container
                   Expanded(
                     child: Container(
@@ -149,15 +126,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
 
                   // Cancel Action Button
-                  if (_searchController.text.isNotEmpty || canPop) ...[
+                  if (_searchController.text.isNotEmpty) ...[
                     const SizedBox(width: 10),
                     GestureDetector(
-                      onTap: () {
-                        _clearSearch();
-                        if (canPop) {
-                          Navigator.pop(context);
-                        }
-                      },
+                      onTap: _clearSearch,
                       child: const Text(
                         'Cancel',
                         style: TextStyle(
