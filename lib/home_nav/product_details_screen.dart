@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/product_card.dart';
-import 'cart_screen.dart';
+import 'main_nav_screen.dart';
 
 /* ============= Product Details Screen Widget ============= */
 class ProductDetailsScreen extends StatefulWidget {
@@ -132,10 +132,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       if (!mounted) return;
 
       if (isBuyNow) {
-        // Buy Now directly opens Cart / Checkout screen
-        Navigator.push(
+        // Buy Now directly opens Cart tab in MainNavScreen with bottom navigation bar visible
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const CartScreen()),
+          MaterialPageRoute(
+            builder: (context) => const MainNavScreen(initialIndex: 2),
+          ),
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -151,9 +154,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               label: 'View Cart',
               textColor: Colors.white,
               onPressed: () {
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const CartScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const MainNavScreen(initialIndex: 2),
+                  ),
+                  (route) => false,
                 );
               },
             ),
