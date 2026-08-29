@@ -219,7 +219,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
-                        childAspectRatio: 0.88,
+                        childAspectRatio: 1,
                       ),
                       itemBuilder: (context, index) {
                         final product = _filteredProducts[index];
