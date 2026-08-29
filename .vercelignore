@@ -1,0 +1,14 @@
+# Ignore mobile & desktop native folders
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Ignore build artifacts except web
+build/app/
+build/flutter_assets/
+.dart_tool/
+.idea/
+.vscode/
+.git/

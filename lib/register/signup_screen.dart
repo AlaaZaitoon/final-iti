@@ -2,6 +2,7 @@
    REGISTER MODULE: Signup Screen
    ======================================================= */
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -165,27 +166,36 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      UserCredential userCredential;
 
-      if (googleUser == null) {
-        if (mounted) setState(() => _isGoogleLoading = false);
-        return;
+      if (kIsWeb) {
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        userCredential =
+            await FirebaseAuth.instance.signInWithPopup(googleProvider);
+      } else {
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+        if (googleUser == null) {
+          if (mounted) setState(() => _isGoogleLoading = false);
+          return;
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
 
       if (user != null) {
-        String displayName = user.displayName ?? googleUser.displayName ?? '';
+        String displayName = user.displayName ?? '';
         if (displayName.isEmpty && user.email != null) {
           final prefix = user.email!.split('@')[0];
           displayName = prefix.isNotEmpty
@@ -197,7 +207,7 @@ class _SignupScreenState extends State<SignupScreen> {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'uid': user.uid,
           'name': displayName,
-          'email': user.email ?? googleUser.email,
+          'email': user.email ?? '',
           'photoUrl': user.photoURL ?? '',
           'lastLogin': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));

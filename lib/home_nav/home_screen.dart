@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     // Partition sample products for Featured and Most Popular
     final featuredProducts = sampleProducts.take(4).toList();
     final popularProducts = sampleProducts.skip(3).take(4).toList();
@@ -74,12 +75,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 1.5,
                           ),
                         ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.person,
-                            color: Color(0xFF6055D8),
-                            size: 26,
-                          ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: user?.photoURL != null &&
+                                  user!.photoURL!.isNotEmpty
+                              ? Image.network(
+                                  user.photoURL!,
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Color(0xFF6055D8),
+                                      size: 26,
+                                    ),
+                                  ),
+                                )
+                              : const Center(
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Color(0xFF6055D8),
+                                    size: 26,
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(width: 12),

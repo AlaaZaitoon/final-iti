@@ -1,8 +1,10 @@
 /* =======================================================
-   HOME NAV MODULE: Main Navigation Screen
+   HOME NAV MODULE: Main Navigation Screen (with Cart Badge)
    ======================================================= */
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
@@ -30,6 +32,8 @@ class _MainNavScreenState extends State<MainNavScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     final List<Widget> screens = [
       HomeScreen(
         onSearchTap: () {
@@ -54,7 +58,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.06),
               blurRadius: 10,
               offset: const Offset(0, -3),
             ),
@@ -66,51 +70,107 @@ class _MainNavScreenState extends State<MainNavScreen> {
               horizontal: 16.0,
               vertical: 10.0,
             ),
-            child: GNav(
-              selectedIndex: _currentIndex,
-              onTabChange: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              rippleColor: const Color(0xFF6055D8).withValues(alpha: 0.1),
-              hoverColor: const Color(0xFF6055D8).withValues(alpha: 0.05),
-              haptic: true,
-              tabBorderRadius: 20,
-              curve: Curves.easeInOut,
-              duration: const Duration(milliseconds: 300),
-              gap: 8,
-              color: const Color(0xFF9CA3AF),
-              activeColor: const Color(0xFF6055D8),
-              iconSize: 24,
-              tabBackgroundColor:
-                  const Color(0xFF6055D8).withValues(alpha: 0.12),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              tabs: const [
-                GButton(
-                  icon: Icons.home_rounded,
-                  text: 'Home',
-                ),
-                GButton(
-                  icon: Icons.search_rounded,
-                  text: 'Search',
-                ),
-                GButton(
-                  icon: Icons.shopping_bag_rounded,
-                  text: 'Cart',
-                ),
-                GButton(
-                  icon: Icons.person_rounded,
-                  text: 'Profile',
-                ),
-              ],
-            ),
+            child: user == null
+                ? _buildGNav(cartCount: 0)
+                : StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .collection('cart')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      final cartCount = snapshot.data?.docs.length ?? 0;
+                      return _buildGNav(cartCount: cartCount);
+                    },
+                  ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildGNav({required int cartCount}) {
+    return GNav(
+      selectedIndex: _currentIndex,
+      onTabChange: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      rippleColor: const Color(0xFF6055D8).withOpacity(0.1),
+      hoverColor: const Color(0xFF6055D8).withOpacity(0.05),
+      haptic: true,
+      tabBorderRadius: 20,
+      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 300),
+      gap: 8,
+      color: const Color(0xFF9CA3AF),
+      activeColor: const Color(0xFF6055D8),
+      iconSize: 24,
+      tabBackgroundColor: const Color(0xFF6055D8).withOpacity(0.12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 10,
+      ),
+      tabs: [
+        const GButton(
+          icon: Icons.home_rounded,
+          text: 'Home',
+        ),
+        const GButton(
+          icon: Icons.search_rounded,
+          text: 'Search',
+        ),
+        GButton(
+          icon: Icons.shopping_bag_rounded,
+          text: 'Cart',
+          leading: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                Icons.shopping_bag_rounded,
+                color: _currentIndex == 2
+                    ? const Color(0xFF6055D8)
+                    : const Color(0xFF9CA3AF),
+                size: 24,
+              ),
+              if (cartCount > 0)
+                Positioned(
+                  top: -4,
+                  right: -6,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF4B4B),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Center(
+                      child: Text(
+                        cartCount > 99 ? '99+' : '$cartCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const GButton(
+          icon: Icons.person_rounded,
+          text: 'Profile',
+        ),
+      ],
     );
   }
 }

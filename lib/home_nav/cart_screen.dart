@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/custom_button.dart';
+import 'main_nav_screen.dart';
 
 /* ============= Cart Screen Widget ============= */
 class CartScreen extends StatefulWidget {
@@ -90,8 +91,49 @@ class _CartScreenState extends State<CartScreen> {
     });
 
     try {
-      // 1. Batch delete all cart items
+      // Calculate order details
+      double subtotal = 0;
+      int totalItemsCount = 0;
+      final List<Map<String, dynamic>> itemsSummary = [];
+
+      for (final doc in docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final price = (data['price'] as num?)?.toDouble() ?? 0.0;
+        final quantity = (data['quantity'] as num?)?.toInt() ?? 1;
+        subtotal += price * quantity;
+        totalItemsCount += quantity;
+        itemsSummary.add({
+          'title': data['title'] ?? 'Product',
+          'price': price,
+          'quantity': quantity,
+          'size': data['size'] ?? '',
+          'image': data['image'] ?? '',
+        });
+      }
+
+      const double deliveryCharges = 5.0;
+      final double total = subtotal + deliveryCharges;
+
+      // 1. Create order record in Firestore
+      final orderRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('orders')
+          .doc();
+
       final batch = FirebaseFirestore.instance.batch();
+      batch.set(orderRef, {
+        'orderId': orderRef.id.substring(0, 8).toUpperCase(),
+        'items': itemsSummary,
+        'subtotal': subtotal,
+        'deliveryCharges': deliveryCharges,
+        'total': total,
+        'totalItems': totalItemsCount,
+        'status': 'Processing',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // 2. Batch delete all cart items
       for (final doc in docs) {
         batch.delete(doc.reference);
       }
@@ -268,6 +310,22 @@ class _CartScreenState extends State<CartScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       color: Color(0xFF9CA3AF),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 180,
+                    child: CustomButton(
+                      text: 'Shop Now',
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const MainNavScreen(initialIndex: 0),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
