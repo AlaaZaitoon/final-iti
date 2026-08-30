@@ -16,6 +16,18 @@ The app is engineered with responsive mobile-framing on web, real-time database 
 
 ---
 
+## 📸 Screenshots & UI Showcase
+
+<div align="center">
+
+| 🏠 **Home & Storefront** | 🛒 **Cart & Checkout** |
+| :---: | :---: |
+| <img src="screenshots/ecommerce_home.png" alt="SwiftShop Storefront" width="420" /> | <img src="screenshots/ecommerce_cart.png" alt="SwiftShop Cart" width="420" /> |
+
+</div>
+
+---
+
 ## ✨ Key Features
 
 ### 🔐 Authentication & User Management
