@@ -1,5 +1,5 @@
 /* =======================================================
-   HOME NAV MODULE: Search Screen
+   HOME NAV MODULE: Search Screen (with Category Filter Chips)
    ======================================================= */
 
 import 'package:flutter/material.dart';
@@ -17,6 +17,15 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Product> _filteredProducts = sampleProducts;
   String _searchQuery = '';
+  String _selectedCategory = 'All';
+
+  final List<String> _categories = [
+    'All',
+    'Clothing',
+    'Electronics',
+    'Shoes',
+    'Watches',
+  ];
 
   @override
   void initState() {
@@ -30,25 +39,42 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  /* ============= Search Filter Logic ============= */
-  void _filterProducts(String query) {
+  /* ============= Combined Search & Category Filter Logic ============= */
+  void _applyFilter({String? query, String? category}) {
     setState(() {
-      _searchQuery = query.trim();
-      if (_searchQuery.isEmpty) {
-        _filteredProducts = sampleProducts;
-      } else {
-        _filteredProducts = sampleProducts.where((product) {
-          final queryLower = _searchQuery.toLowerCase();
-          return product.title.toLowerCase().contains(queryLower);
-        }).toList();
-      }
+      if (query != null) _searchQuery = query.trim();
+      if (category != null) _selectedCategory = category;
+
+      _filteredProducts = sampleProducts.where((product) {
+        // 1. Text Search Filter
+        final queryLower = _searchQuery.toLowerCase();
+        final matchesQuery = _searchQuery.isEmpty ||
+            product.title.toLowerCase().contains(queryLower) ||
+            product.brand.toLowerCase().contains(queryLower);
+
+        // 2. Category Filter
+        bool matchesCategory = true;
+        if (_selectedCategory == 'Clothing') {
+          matchesCategory = ['jacket', 'hoodie', 'girl', 't-shirt']
+              .contains(product.id.toLowerCase());
+        } else if (_selectedCategory == 'Electronics') {
+          matchesCategory =
+              ['airpods', 'tv'].contains(product.id.toLowerCase());
+        } else if (_selectedCategory == 'Shoes') {
+          matchesCategory = product.id.toLowerCase().contains('nike');
+        } else if (_selectedCategory == 'Watches') {
+          matchesCategory = product.id.toLowerCase().contains('watch');
+        }
+
+        return matchesQuery && matchesCategory;
+      }).toList();
     });
   }
 
   /* ============= Clear Search Input ============= */
   void _clearSearch() {
     _searchController.clear();
-    _filterProducts('');
+    _applyFilter(query: '');
     FocusScope.of(context).unfocus();
   }
 
@@ -87,14 +113,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              onChanged: _filterProducts,
+                              onChanged: (q) => _applyFilter(query: q),
                               autofocus: false,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF111827),
                               ),
                               decoration: const InputDecoration(
-                                hintText: 'Search here',
+                                hintText: 'Search products or brands...',
                                 hintStyle: TextStyle(
                                   fontSize: 14,
                                   color: Color(0xFF9CA3AF),
@@ -144,18 +170,78 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
 
-            // 2. Results Count Header
+            // 2. Category Filter Chips (Horizontal Scroll)
+            SizedBox(
+              height: 36,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                itemCount: _categories.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  final isSelected = _selectedCategory == category;
+
+                  return GestureDetector(
+                    onTap: () => _applyFilter(category: category),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF6055D8)
+                            : const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF6055D8)
+                                      .withOpacity(0.25),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          category,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // 3. Results Count Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _searchQuery.isEmpty
-                        ? 'All Products'
-                        : 'Results for "$_searchQuery"',
+                    _selectedCategory == 'All'
+                        ? (_searchQuery.isEmpty
+                            ? 'All Products'
+                            : 'Results for "$_searchQuery"')
+                        : '$_selectedCategory (${_filteredProducts.length})',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -163,7 +249,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                   Text(
-                    '${_filteredProducts.length} Results Found',
+                    '${_filteredProducts.length} items',
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -174,9 +260,9 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            // 3. Results Grid View
+            // 4. Results Grid View
             Expanded(
               child: _filteredProducts.isEmpty
                   ? Center(
@@ -190,7 +276,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           const SizedBox(height: 14),
                           Text(
-                            'No products found for "$_searchQuery"',
+                            'No products found in $_selectedCategory',
                             style: const TextStyle(
                               fontSize: 15,
                               color: Color(0xFF6B7280),
@@ -199,7 +285,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           const SizedBox(height: 6),
                           const Text(
-                            'Try searching with different keywords',
+                            'Try selecting another category or keyword',
                             style: TextStyle(
                               fontSize: 13,
                               color: Color(0xFF9CA3AF),
@@ -219,7 +305,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
-                        childAspectRatio: 1,
+                        childAspectRatio: 0.88,
                       ),
                       itemBuilder: (context, index) {
                         final product = _filteredProducts[index];

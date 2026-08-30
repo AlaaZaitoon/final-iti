@@ -323,14 +323,27 @@ class _ProductCardState extends State<ProductCard> {
                     child: Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.25),
+                        color: _isFavorite
+                            ? Colors.white
+                            : Colors.black.withOpacity(0.25),
                         shape: BoxShape.circle,
+                        boxShadow: _isFavorite
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.12),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                )
+                              ]
+                            : null,
                       ),
                       child: Icon(
                         _isFavorite
-                            ? Icons.favorite
+                            ? Icons.favorite_rounded
                             : Icons.favorite_border_rounded,
-                        color: Colors.white,
+                        color: _isFavorite
+                            ? const Color(0xFFFF4B4B)
+                            : Colors.white,
                         size: 18,
                       ),
                     ),
