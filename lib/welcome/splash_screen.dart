@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
                           borderRadius: BorderRadius.circular(26),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
+                              color: Colors.black.withValues(alpha: 0.25),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -135,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen>
                         'Discover & Shop The Best Products',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           fontWeight: FontWeight.w400,
                           letterSpacing: 0.3,
                         ),
@@ -161,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen>
                 'Loading store...',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.white.withOpacity(0.75),
+                  color: Colors.white.withValues(alpha: 0.75),
                   fontWeight: FontWeight.w500,
                 ),
               ),

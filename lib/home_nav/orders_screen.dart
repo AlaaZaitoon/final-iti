@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/shimmer_loading.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -69,11 +70,7 @@ class OrdersScreen extends StatelessWidget {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6055D8),
-                    ),
-                  );
+                  return const ShimmerOrdersListSkeleton(itemCount: 4);
                 }
 
                 final docs = snapshot.data?.docs ?? [];
@@ -168,7 +165,7 @@ class OrdersScreen extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF6055D8)
-                                      .withOpacity(0.12),
+                                      .withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(

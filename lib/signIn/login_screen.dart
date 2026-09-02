@@ -61,32 +61,134 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         // Strict Check: Block sign in if email is not verified
         if (!user.emailVerified) {
+          final unverifiedUser = user;
           await FirebaseAuth.instance.signOut();
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                'Please verify your email before logging in. Check inbox/spam.',
+
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              backgroundColor: const Color(0xFFE65100),
-              duration: const Duration(seconds: 5),
-              action: SnackBarAction(
-                label: 'Resend',
-                textColor: Colors.white,
-                onPressed: () async {
-                  try {
-                    await user.sendEmailVerification();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Verification email resent!'),
-                          backgroundColor: Color(0xFF6055D8),
+              title: Row(
+                children: const [
+                  Icon(Icons.mark_email_unread_outlined,
+                      color: Color(0xFFE65100), size: 28),
+                  SizedBox(width: 10),
+                  Text(
+                    'Email Not Verified',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Please verify your email ($email) before logging in.',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF374151),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFFDE68A)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Icon(Icons.warning_amber_rounded,
+                            color: Color(0xFFD97706), size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Important: The verification email is often delivered to your Gmail Spam / Junk folder. Please make sure to check there.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF92400E),
+                              fontWeight: FontWeight.w600,
+                              height: 1.35,
+                            ),
+                          ),
                         ),
-                      );
-                    }
-                  } catch (_) {}
-                },
+                      ],
+                    ),
+                  ),
+                ],
               ),
+              actions: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          try {
+                            await unverifiedUser.sendEmailVerification();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Verification email resent! Check your inbox & Spam / Junk folder.',
+                                  ),
+                                  backgroundColor: Color(0xFF6055D8),
+                                  duration: Duration(seconds: 4),
+                                ),
+                              );
+                            }
+                          } catch (_) {}
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF6055D8)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'Resend',
+                          style: TextStyle(
+                            color: Color(0xFF6055D8),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6055D8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text(
+                          'OK',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           );
           return;

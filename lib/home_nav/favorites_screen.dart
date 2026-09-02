@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/shimmer_loading.dart';
 import '../widgets/product_card.dart';
 import 'product_details_screen.dart';
 
@@ -74,11 +75,7 @@ class FavoritesScreen extends StatelessWidget {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6055D8),
-                    ),
-                  );
+                  return const ShimmerProductGridSkeleton(itemCount: 6);
                 }
 
                 final docs = snapshot.data?.docs ?? [];

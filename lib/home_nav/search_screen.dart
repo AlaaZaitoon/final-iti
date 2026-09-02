@@ -201,7 +201,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             ? [
                                 BoxShadow(
                                   color: const Color(0xFF6055D8)
-                                      .withOpacity(0.25),
+                                      .withValues(alpha: 0.25),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -305,7 +305,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16.0,
                         mainAxisSpacing: 16.0,
-                        childAspectRatio: 1.08,
+                        childAspectRatio: 0.95,
                       ),
                       itemBuilder: (context, index) {
                         final product = _filteredProducts[index];

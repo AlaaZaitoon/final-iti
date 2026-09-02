@@ -282,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 14),
 
               SizedBox(
-                height: 160,
+                height: 168,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: featuredProducts.length,
@@ -316,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 14),
 
               SizedBox(
-                height: 160,
+                height: 168,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: popularProducts.length,
@@ -359,12 +359,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         GestureDetector(
           onTap: onSeeAllTap,
-          child: const Text(
-            'See All',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF6055D8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF6055D8).withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'See All',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF6055D8),
+                  ),
+                ),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 10,
+                  color: Color(0xFF6055D8),
+                ),
+              ],
             ),
           ),
         ),

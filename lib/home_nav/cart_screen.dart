@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/shimmer_loading.dart';
 import 'main_nav_screen.dart';
 
 /* ============= Cart Screen Widget ============= */
@@ -258,11 +259,7 @@ class _CartScreenState extends State<CartScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF6055D8),
-              ),
-            );
+            return const ShimmerCartListSkeleton(itemCount: 3);
           }
 
           if (snapshot.hasError) {

@@ -292,8 +292,16 @@ class _ProductCardState extends State<ProductCard> {
         width: widget.imageWidth,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F7F7),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16.0),
+          border: Border.all(color: const Color(0xFFF3F4F6), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,12 +313,49 @@ class _ProductCardState extends State<ProductCard> {
                 Container(
                   height: widget.imageHeight,
                   width: widget.imageWidth ?? double.infinity,
-                  color: const Color(0xFFE5E7EB),
+                  color: const Color(0xFFF8F7F7),
                   child: Image.asset(
                     widget.product.image,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.image, color: Colors.grey),
+                  ),
+                ),
+
+                // Rating Badge
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star_rounded,
+                            size: 13, color: Color(0xFFF59E0B)),
+                        const SizedBox(width: 2),
+                        Text(
+                          widget.product.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF111827),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -325,12 +370,12 @@ class _ProductCardState extends State<ProductCard> {
                       decoration: BoxDecoration(
                         color: _isFavorite
                             ? Colors.white
-                            : Colors.black.withOpacity(0.25),
+                            : Colors.black.withValues(alpha: 0.25),
                         shape: BoxShape.circle,
                         boxShadow: _isFavorite
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.12),
+                                  color: Colors.black.withValues(alpha: 0.12),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 )

@@ -58,7 +58,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, -3),
             ),
@@ -97,8 +97,8 @@ class _MainNavScreenState extends State<MainNavScreen> {
           _currentIndex = index;
         });
       },
-      rippleColor: const Color(0xFF6055D8).withOpacity(0.1),
-      hoverColor: const Color(0xFF6055D8).withOpacity(0.05),
+      rippleColor: const Color(0xFF6055D8).withValues(alpha: 0.1),
+      hoverColor: const Color(0xFF6055D8).withValues(alpha: 0.05),
       haptic: true,
       tabBorderRadius: 20,
       curve: Curves.easeInOut,
@@ -107,7 +107,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
       color: const Color(0xFF9CA3AF),
       activeColor: const Color(0xFF6055D8),
       iconSize: 24,
-      tabBackgroundColor: const Color(0xFF6055D8).withOpacity(0.12),
+      tabBackgroundColor: const Color(0xFF6055D8).withValues(alpha: 0.12),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 10,

@@ -456,25 +456,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 36),
 
               // 3. Sign Out Button
-              _isSigningOut
-                  ? const CircularProgressIndicator(
-                      color: Color(0xFFFF4B4B),
-                      strokeWidth: 2.5,
-                    )
-                  : GestureDetector(
-                      onTap: _handleSignOut,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(
-                          'Sign Out',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFFF4B4B),
+              GestureDetector(
+                onTap: _isSigningOut ? null : _handleSignOut,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFFEE2E2), width: 1.2),
+                  ),
+                  child: Center(
+                    child: _isSigningOut
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFFF4B4B),
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.logout_rounded,
+                                color: Color(0xFFFF4B4B),
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Sign Out',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFFF4B4B),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                    ),
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 20),
             ],

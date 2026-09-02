@@ -441,7 +441,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
                 vertical: 16.0,
@@ -497,12 +506,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF3F4F6),
+                          color: const Color(0xFF6055D8)
+                              .withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: const Color(0xFF6055D8)
+                                .withValues(alpha: 0.2),
+                            width: 1.2,
+                          ),
                         ),
                         child: const Icon(
                           Icons.shopping_bag_outlined,
-                          color: Color(0xFF9CA3AF),
+                          color: Color(0xFF6055D8),
                           size: 24,
                         ),
                       ),
